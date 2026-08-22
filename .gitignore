@@ -1,0 +1,39 @@
+# ---- 依赖与构建产物（本项目为零依赖、无构建，以下为兜底规则）----
+node_modules/
+dist/
+build/
+out/
+*.zip
+*.tar.gz
+*.crx
+*.pem
+*.key
+
+# ---- 本地调试缓存 ----
+*.log
+*.tmp
+.cache/
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+
+# ---- 本地配置 / 隐私信息（防止误提交 API Key、Obsidian 密钥等）----
+.env
+.env.*
+*.local.js
+*.local.json
+secrets.*
+credentials.*
+config.user.*
+.vscode/
+.idea/
+
+# ---- 编辑器与系统 ----
+*.swp
+*~
+
+# ---- 说明 ----
+# 本扩展的所有用户配置（大模型 API、Obsidian 密钥等）均保存在浏览器本地
+# （chrome.storage.local），不写入仓库文件；以上规则用于防止将任何本地
+# 隐私/密钥文件意外提交到 GitHub。

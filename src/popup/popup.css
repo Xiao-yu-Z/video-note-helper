@@ -1,0 +1,16 @@
+/* popup.css — 弹窗样式（无外部依赖） */
+* { box-sizing: border-box; }
+body { margin: 0; width: 300px; font: 13px/1.6 -apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; color: #1f2329; }
+.app { padding: 14px 16px 12px; background: #fff; }
+.head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; margin-bottom: 10px; }
+.logo { font-size: 18px; }
+.status { background: #f5f7fa; border: 1px solid #e5e6eb; border-radius: 8px; padding: 8px 10px; font-size: 12px; min-height: 38px; margin-bottom: 10px; white-space: pre-wrap; }
+.status.ok { border-color: #b7eb8f; background: #f6ffed; }
+.status.no { border-color: #ffccc7; background: #fff1f0; }
+.row { display: flex; gap: 8px; }
+button { flex: 1; padding: 8px 6px; border: 1px solid #e5e6eb; border-radius: 8px; background: #f2f3f5; cursor: pointer; font-size: 12px; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+button.primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+.tips { margin: 10px 0 0; padding-left: 18px; color: #86909c; font-size: 11px; }
+.tips li { margin-bottom: 2px; }
+footer { margin-top: 10px; text-align: center; color: #c9cdd4; font-size: 11px; }

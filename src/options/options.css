@@ -1,0 +1,31 @@
+/* options.css — 设置页样式（无外部依赖） */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 14px/1.6 -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f5f7fa; color: #1f2329;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 24px 20px 48px; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+.sub { color: #86909c; margin: 0 0 20px; }
+section { background: #fff; border: 1px solid #e5e6eb; border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; }
+h2 { font-size: 15px; margin: 0 0 12px; color: #3b82f6; }
+label { display: block; margin-bottom: 12px; font-weight: 600; font-size: 13px; color: #4e5969; }
+input[type=text], input[type=password], input[type=number], select, textarea {
+  width: 100%; margin-top: 4px; padding: 8px 10px; border: 1px solid #e5e6eb;
+  border-radius: 8px; font: 13px/1.4 inherit; font-weight: 400; background: #fff; color: #1f2329;
+}
+textarea { min-height: 84px; resize: vertical; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.check { display: flex; align-items: center; gap: 8px; font-weight: 400; }
+.check input { width: auto; margin: 0; }
+.check-inline { font-weight: 600; }
+.check-inline > span { display: flex; gap: 16px; margin-top: 6px; font-weight: 400; }
+.actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 8px 0 24px; }
+button { padding: 9px 16px; border: 1px solid #e5e6eb; border-radius: 8px; background: #f2f3f5; cursor: pointer; font-size: 13px; }
+button.primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+#msg { font-size: 13px; }
+#msg.ok { color: #00b42a; }
+#msg.err { color: #f53f3f; }
+.disclaimer { font-size: 12px; color: #86909c; background: #fff7e8; border: 1px solid #ffe4ba; border-radius: 10px; padding: 12px 14px; line-height: 1.7; }
+.disclaimer strong { color: #d25f00; }

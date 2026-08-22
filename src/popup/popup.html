@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Note Helper</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app">
+    <div class="head">
+      <span class="logo">📝</span>
+      <span class="name">视频图文笔记助手</span>
+    </div>
+    <div id="status" class="status">正在检测当前页面…</div>
+    <div class="row">
+      <button id="openPanel" class="primary" disabled>📝 打开笔记面板</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button id="openOptions">⚙️ 打开设置</button>
+      <button id="openGuide">📖 使用说明</button>
+    </div>
+    <ul class="tips">
+      <li>在支持的视频页面，点击上方「打开笔记面板」即可唤出操作面板。</li>
+      <li>支持：B站 · YouTube · 百度网盘（公开视频）。</li>
+      <li>面板不会自动弹出，按需打开。</li>
+    </ul>
+    <footer>纯本地运行 · 数据不上传</footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

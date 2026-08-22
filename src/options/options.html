@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设置 · Video Note Helper</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main class="wrap">
+    <h1>⚙️ Video Note Helper 设置</h1>
+    <p class="sub">所有配置仅保存在本地浏览器，不会上传任何服务器。</p>
+
+    <section>
+      <h2>① 大模型 API（OpenAI 兼容）</h2>
+      <label>API Base URL
+        <input type="text" id="apiBase" placeholder="https://api.openai.com/v1">
+      </label>
+      <label>API Key
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+      </label>
+      <label>模型名称
+        <input type="text" id="model" placeholder="gpt-4o-mini">
+      </label>
+      <div class="grid2">
+        <label>Temperature
+          <input type="number" id="temperature" step="0.1" min="0" max="2" value="0.4">
+        </label>
+        <label>最大输出 Token
+          <input type="number" id="maxTokens" step="100" min="100" value="2000">
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h2>② Obsidian 同步（Local REST API）</h2>
+      <label>接口地址
+        <input type="text" id="obsidianBase" placeholder="http://127.0.0.1:27123">
+      </label>
+      <label>授权密钥
+        <input type="password" id="obsidianKey" placeholder="Obsidian 插件设置中的密钥" autocomplete="off">
+      </label>
+      <label>库名（Vault，用于自动打开 Obsidian；可选）
+        <input type="text" id="obsidianVault" placeholder="例如 MyVault">
+      </label>
+      <div class="grid2">
+        <label>笔记保存目录
+          <input type="text" id="noteDir" placeholder="VideoNotes">
+        </label>
+        <label>附件保存目录
+          <input type="text" id="attachDir" placeholder="VideoNotes/attachments">
+        </label>
+      </div>
+      <label class="check"><input type="checkbox" id="byPlatform"> 按平台建立子目录（bilibili / youtube / baidu）</label>
+      <div class="grid2">
+        <label>文件名规则
+          <select id="fileNameRule">
+            <option value="title">视频标题</option>
+            <option value="title_date">标题_日期</option>
+            <option value="date_title">日期_标题</option>
+          </select>
+        </label>
+        <label class="check-inline">同步行为
+          <span>
+            <label class="check"><input type="checkbox" id="syncOverwrite"> 覆盖已存在</label>
+            <label class="check"><input type="checkbox" id="autoSync"> 生成后自动同步</label>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h2>③ 配图设置</h2>
+      <div class="grid2">
+        <label>图片格式
+          <select id="imageFormat">
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/png">PNG</option>
+          </select>
+        </label>
+        <label>清晰度（压缩质量 0.1-1）
+          <input type="number" id="imageQuality" step="0.05" min="0.1" max="1" value="0.75">
+        </label>
+      </div>
+      <div class="grid2">
+        <label>最大宽度（px）
+          <input type="number" id="imageMaxWidth" step="40" min="200" value="720">
+        </label>
+        <label>期望配图数量
+          <input type="number" id="imageDensity" step="1" min="1" max="6" value="5">
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h2>④ 笔记与提示词</h2>
+      <label>YAML 元字段（逗号分隔）
+        <input type="text" id="yamlFields" placeholder="platform, source, url, duration, created">
+      </label>
+      <label>默认标签（逗号分隔）
+        <input type="text" id="tags" placeholder="video-note, AI">
+      </label>
+      <label>自定义系统提示词（留空使用内置模板）
+        <textarea id="notePromptTemplate" placeholder="可填写自定义指令，留空则用内置结构化笔记模板。"></textarea>
+      </label>
+    </section>
+
+    <div class="actions">
+      <button id="save" class="primary">保存设置</button>
+      <button id="test">测试大模型连接</button>
+      <button id="reset">恢复默认</button>
+      <span id="msg"></span>
+    </div>
+
+    <footer class="disclaimer">
+      <strong>免责声明：</strong>
+      1) 本项目仅供个人学习研究使用，禁止商业用途；
+      2) 仅提取页面公开字幕与播放器实时画面，不实现视频下载、破解限速、绕过会员、提取视频源文件；
+      3) 请遵守各平台服务协议与版权规定；
+      4) 所有数据本地运行，开发者不收集任何用户隐私与密钥信息。
+    </footer>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>

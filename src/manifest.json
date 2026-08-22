@@ -1,0 +1,87 @@
+{
+  "manifest_version": 3,
+  "name": "Video Note Helper · 视频图文笔记助手",
+  "version": "1.0.0",
+  "description": "自动识别百度网盘/B站/YouTube 视频，提取公开字幕、截取关键帧、调用用户自有大模型生成 Obsidian 图文笔记。纯前端本地运行，无中转服务器。",
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Video Note Helper",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    }
+  },
+  "options_page": "options/options.html",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "downloads"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.bilibili.com/*",
+        "https://www.bilibili.tv/*",
+        "https://b23.tv/*",
+        "https://player.bilibili.com/*"
+      ],
+      "js": [
+        "content/common.js",
+        "content/adapters/bilibili.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://youtube.com/*",
+        "https://m.youtube.com/*"
+      ],
+      "js": [
+        "content/common.js",
+        "content/adapters/youtube.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://pan.baidu.com/*",
+        "https://yun.baidu.com/*"
+      ],
+      "js": [
+        "content/common.js",
+        "content/adapters/baidu.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/icon16.png",
+        "assets/icon48.png",
+        "assets/icon128.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}
