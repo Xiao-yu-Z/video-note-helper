@@ -51,7 +51,7 @@ video-note-helper/
 
 ## 🚀 安装与使用方法
 
-### 方式一：本地加载（开发者模式）
+### 步骤一：本地加载（开发者模式）
 
 1. 下载本仓库并解压，记住 `src/` 文件夹路径。
 2. 打开 Chrome / Edge 浏览器，进入 `chrome://extensions`（或 `edge://extensions`）。
@@ -61,7 +61,7 @@ video-note-helper/
 
 > 详细图文步骤见 [docs/install-guide.md](docs/install-guide.md)。
 
-### 方式二：使用流程
+### 步骤二：使用流程
 
 1. 在扩展设置中填写 **大模型 API**（OpenAI 兼容：`base_url` / `API Key` / 模型名）。
 2. 进入 B站 / YouTube / 百度网盘 的 **公开视频** 播放页，点击工具栏扩展图标 → **「打开笔记面板」**（面板不会自动弹出，按需打开）。
