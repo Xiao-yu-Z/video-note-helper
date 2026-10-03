@@ -21,10 +21,13 @@
     });
   }
   // 经后台代发（携带 Referer / Cookie 绕过 CORS 与风控）
+  // 失败时抛出可读错误（区分超时 / 网络不通 / HTTP 状态码）
   async function proxy(url) {
     const headers = { Referer: 'https://www.bilibili.com/', 'User-Agent': navigator.userAgent };
     try { headers['Cookie'] = document.cookie; } catch (_) {}
     const r = await send({ action: 'proxyFetch', payload: { url, method: 'GET', headers } });
+    if (r && r.error) throw new Error(r.error);
+    if (!r || r.status === 0) throw new Error('网络请求失败，无法访问 B站接口（可能被网络或风控拦截，可稍后重试）。');
     return r; // {status, text}
   }
 
@@ -354,7 +357,9 @@ function safeAdd(x, y) {
   let mixinKeyCache = null;
   async function getMixinKey() {
     if (mixinKeyCache) return mixinKeyCache;
-    const r = await proxy('https://api.bilibili.com/x/web-interface/nav');
+    let r;
+    try { r = await proxy('https://api.bilibili.com/x/web-interface/nav'); }
+    catch (_) { return ''; } // 取不到签名密钥就走免签名兜底
     let orig = '';
     try {
       const j = JSON.parse(r.text || '{}');
@@ -403,34 +408,45 @@ function safeAdd(x, y) {
   }
 
   async function getCid(bvid) {
-    const r = await proxy(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`);
-    if (r.status !== 200) return null;
+    let r;
+    try { r = await proxy(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`); }
+    catch (e) { throw new Error(e.message || '获取视频信息失败。'); }
+    if (!r || r.status !== 200) throw new Error(`获取视频 cid 失败（HTTP ${(r && r.status) || 0}），可能触发了 B站风控，请稍后重试或刷新页面。`);
     try {
       const j = JSON.parse(r.text);
       if (j.code === 0) return j.data.cid || (j.data.pages && j.data.pages[0] && j.data.pages[0].cid) || null;
-    } catch (_) {}
+      if (j.code === -403) throw new Error('B站拒绝了本次请求（风控 -403）：请在浏览器中先正常浏览几秒、确认已登录，再重试。');
+    } catch (e) {
+      if (/风控|拒绝/.test(e.message || '')) throw e;
+    }
     return null;
   }
 
   async function fetchSubtitleList(bvid, cid) {
     // 1) WBI 签名请求
-    const signed = await wbiSign({ bvid, cid });
-    if (signed) {
-      const r = await proxy(`https://api.bilibili.com/x/player/wbi/v2?${toQuery(signed)}`);
-      if (r.status === 200) {
-        try { const j = JSON.parse(r.text); if (j.code === 0) return j.data.subtitle.subtitles || []; } catch (_) {}
+    try {
+      const signed = await wbiSign({ bvid, cid });
+      if (signed) {
+        const r = await proxy(`https://api.bilibili.com/x/player/wbi/v2?${toQuery(signed)}`);
+        if (r.status === 200) {
+          try { const j = JSON.parse(r.text); if (j.code === 0) return j.data.subtitle.subtitles || []; } catch (_) {}
+        }
       }
-    }
+    } catch (_) { /* 进入下一层兜底 */ }
     // 2) 免签名兜底
-    const r2 = await proxy(`https://api.bilibili.com/x/player/wbi/v2?bvid=${bvid}&cid=${cid}`);
-    if (r2.status === 200) {
-      try { const j = JSON.parse(r2.text); if (j.code === 0) return j.data.subtitle.subtitles || []; } catch (_) {}
-    }
+    try {
+      const r2 = await proxy(`https://api.bilibili.com/x/player/wbi/v2?bvid=${bvid}&cid=${cid}`);
+      if (r2.status === 200) {
+        try { const j = JSON.parse(r2.text); if (j.code === 0) return j.data.subtitle.subtitles || []; } catch (_) {}
+      }
+    } catch (_) { /* 进入下一层兜底 */ }
     // 3) 旧版接口兜底
-    const r3 = await proxy(`https://api.bilibili.com/x/player/v2?bvid=${bvid}&cid=${cid}`);
-    if (r3.status === 200) {
-      try { const j = JSON.parse(r3.text); if (j.code === 0) return (j.data.subtitle && j.data.subtitle.subtitles) || []; } catch (_) {}
-    }
+    try {
+      const r3 = await proxy(`https://api.bilibili.com/x/player/v2?bvid=${bvid}&cid=${cid}`);
+      if (r3.status === 200) {
+        try { const j = JSON.parse(r3.text); if (j.code === 0) return (j.data.subtitle && j.data.subtitle.subtitles) || []; } catch (_) {}
+      }
+    } catch (_) { /* 全部兜底失败 */ }
     return null;
   }
 
@@ -457,10 +473,10 @@ function safeAdd(x, y) {
     const bvid = getBvid();
     if (!bvid) throw new Error('未能从链接识别 BV 号，请在视频播放页使用本功能。');
     const cid = await getCid(bvid);
-    if (!cid) throw new Error('未能获取视频 cid，请确认视频已正常加载（部分视频需登录后查看）。');
+    if (!cid) throw new Error('未能获取视频 cid，请确认视频已正常加载（部分视频需登录后查看，或触发了 B站风控，可刷新页面后重试）。');
 
     let subs = await fetchSubtitleList(bvid, cid);
-    if (!subs || !subs.length) throw new Error('该视频暂无公开字幕（CC/AI）。可在 B站播放器开启字幕后重试。');
+    if (!subs || !subs.length) throw new Error('该视频暂无公开字幕（CC/AI）。可在 B站播放器开启字幕后重试；若确有字幕，多为 B站风控拦截，稍后重试即可。');
 
     // 排序：官方 CC 优先（ai_type!=1），其次 AI 自动字幕
     subs = subs.slice().sort((a, b) => (a.ai_type === 1 ? 1 : 0) - (b.ai_type === 1 ? 1 : 0));
@@ -471,7 +487,7 @@ function safeAdd(x, y) {
     const raw = await proxy(url);
     if (raw.status !== 200) throw new Error('字幕文件下载失败 HTTP ' + raw.status);
     let arr;
-    try { arr = JSON.parse(raw.text); } catch (_) { throw new Error('字幕数据解析失败。'); }
+    try { arr = JSON.parse(raw.text); } catch (_) { throw new Error('字幕数据解析失败：返回内容不是合法 JSON。'); }
     // B站字幕文件格式为 {body: [...]}；少数旧版可能是纯数组，统一兼容处理。
     const body = arr && Array.isArray(arr.body) ? arr.body : Array.isArray(arr) ? arr : [];
     if (!body.length) throw new Error('字幕格式异常：未识别到字幕条目。');

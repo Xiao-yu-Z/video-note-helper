@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Video Note Helper · 视频图文笔记助手",
-  "version": "1.0.0",
+  "version": "1.1.2",
   "description": "自动识别百度网盘/B站/YouTube 视频，提取公开字幕、截取关键帧、调用用户自有大模型生成 Obsidian 图文笔记。纯前端本地运行，无中转服务器。",
   "icons": {
     "16": "assets/icon16.png",

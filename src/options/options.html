@@ -30,6 +30,40 @@
           <input type="number" id="maxTokens" step="100" min="100" value="2000">
         </label>
       </div>
+      <h3>网络健壮性</h3>
+      <div class="grid2">
+        <label>请求超时（秒）
+          <input type="number" id="requestTimeout" step="30" min="30" max="1800" value="240">
+        </label>
+        <label>失败重试次数
+          <input type="number" id="retryTimes" step="1" min="0" max="5" value="2">
+        </label>
+      </div>
+      <div class="grid2">
+        <label>Obsidian 请求超时（秒）
+          <input type="number" id="obsidianTimeout" step="1" min="3" max="120" value="20">
+        </label>
+        <label>字幕送入模型上限（字符）
+          <input type="number" id="subtitleMaxChars" step="2000" min="2000" max="200000" value="24000">
+        </label>
+      </div>
+      <label class="check"><input type="checkbox" id="ensureDirs"> 同步前预建目录（较慢，一般无需开启）</label>
+      <p class="hint">提示：若接口返回 <code>data: {...}</code> 流式格式，扩展已自动兼容解析；超时或网络抖动会自动指数退避重试。本项「字幕送入模型上限」仅在**未启用分段生成**时对单次请求生效。</p>
+    </section>
+
+    <section>
+      <h2>⑤ 长视频分段生成</h2>
+      <p class="hint" style="margin-top:0">字幕过长会让提示词超出模型上下文，导致模型「零输出」（长视频失败的根因）。开启后会把字幕切成多段分别生成，最后自动合并——每个请求都很小，从根本上避免超上下文，同时也大幅降低超时概率。</p>
+      <label class="check"><input type="checkbox" id="chunkMode"> 长视频自动分段生成（推荐开启）</label>
+      <div class="grid2">
+        <label>每段字幕字符数
+          <input type="number" id="chunkChars" step="1000" min="1000" max="40000" value="6000">
+        </label>
+        <label>最多分几段
+          <input type="number" id="maxChunks" step="1" min="1" max="30" value="10">
+        </label>
+      </div>
+      <p class="hint">字幕总长超过「每段字符数 ×1.2」时才自动分段，否则单次生成（上下文更连贯）。段数超过上限会自动放大每段预算，避免一次发出过多请求。若某一段失败，其余段落的结果仍会保留，并在笔记中标注缺失的时间段。</p>
     </section>
 
     <section>
@@ -108,6 +142,7 @@
     <div class="actions">
       <button id="save" class="primary">保存设置</button>
       <button id="test">测试大模型连接</button>
+      <button id="testObsidian">测试 Obsidian 连接</button>
       <button id="reset">恢复默认</button>
       <span id="msg"></span>
     </div>
@@ -120,6 +155,6 @@
       4) 所有数据本地运行，开发者不收集任何用户隐私与密钥信息。
     </footer>
   </main>
-  <script src="options.js"></script>
+  <script type="module" src="options.js"></script>
 </body>
 </html>

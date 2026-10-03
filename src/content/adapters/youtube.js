@@ -20,6 +20,8 @@
   }
   async function proxy(url) {
     const r = await send({ action: 'proxyFetch', payload: { url, method: 'GET' } });
+    if (r && r.error) throw new Error(r.error);
+    if (!r || r.status === 0) throw new Error('网络请求失败：无法访问 YouTube 字幕接口，请检查网络连接。');
     return r; // {status, text}
   }
 
@@ -107,22 +109,26 @@
     const pr = getPlayerResponse();
     const tracks = pr && pr.captions && pr.captions.playerCaptionsTracklistRenderer
       && pr.captions.playerCaptionsTracklistRenderer.captionTracks;
-    if (!tracks || !tracks.length) throw new Error('该视频暂无公开字幕。可在 YouTube 播放器开启字幕后重试。');
+    if (!tracks || !tracks.length) throw new Error('该视频暂无公开字幕。可在 YouTube 播放器开启字幕后重试；若确实有字幕，请刷新页面（播放器数据尚未加载完成）后重试。');
 
     const track = pickTrack(tracks);
     let url = track.baseUrl;
     if (url.indexOf('fmt=') === -1) url += (url.indexOf('?') === -1 ? '?' : '&') + 'fmt=json3';
-    const res = await proxy(url);
+    let res;
+    try { res = await proxy(url); }
+    catch (e) { throw new Error(e.message || '字幕下载失败。'); }
     if (!res || res.status !== 200) throw new Error('字幕下载失败（HTTP ' + (res && res.status) + '）。');
     const text = res.text || '';
     let list = [];
     try { list = await parseJson3(text); } catch (_) { try { list = await parseXml(text); } catch (_) {} }
     if (!list.length) {
       // 回退：尝试 XML 格式
-      const res2 = await proxy(track.baseUrl + (track.baseUrl.indexOf('?') === -1 ? '?' : '&') + 'fmt=ttml');
-      if (res2 && res2.status === 200) list = await parseXml(res2.text || '');
+      try {
+        const res2 = await proxy(track.baseUrl + (track.baseUrl.indexOf('?') === -1 ? '?' : '&') + 'fmt=ttml');
+        if (res2 && res2.status === 200) list = await parseXml(res2.text || '');
+      } catch (_) {}
     }
-    if (!list.length) throw new Error('字幕内容为空。');
+    if (!list.length) throw new Error('字幕内容为空：已成功下载字幕文件，但未能解析出文本（可能是空字幕或格式不受支持）。');
     const out = [];
     for (const it of list) { if (out.length && out[out.length - 1].text === it.text) continue; out.push(it); }
     return out;
